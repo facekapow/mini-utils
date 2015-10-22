@@ -76,7 +76,7 @@
   exports.EventEmitter = EventEmitter;
   /* End EventEmitter */
 
-  if (!isWebWorker() && !isNode) {
+  if (!exports.isWebWorker() && !exports.isNode()) {
     /* Document prototype extensions */
     var doc = HTMLDocument || Document;
     doc.prototype.get = function(str) {
