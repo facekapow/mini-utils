@@ -1,5 +1,5 @@
 {
-  "name": "mini-utils",
+  "name": "mini-util",
   "description": "A mini script of utilities for Node and the Browser.",
   "main": "mini-utils.js",
   "authors": [
@@ -9,6 +9,7 @@
   "keywords": [
     "mini",
     "utils",
+    "mini-util",
     "mini-utils",
     "utilities"
   ],
