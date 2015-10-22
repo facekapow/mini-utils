@@ -4,6 +4,7 @@
   if (typeof require !== 'undefined' && typeof define === 'undefined') {
     cb(module.exports, true);
   } else {
+    window.miniUtils = {};
     cb(window.miniUtils, false);
   }
 })(function(exports, isNode) {
@@ -12,6 +13,12 @@
     return isNode;
   }
   /* End isNode */
+
+  /* isBrowser */
+  exports.isBrowser = function() {
+    return (typeof window !== 'undefined');
+  }
+  /* End isBrowser */
 
   /* isWebWorker */
   exports.isWebWorker = function() {
@@ -61,14 +68,15 @@
     return this;
   }
 
-  EventEmitter.prototype.emit = function(e, data) {
+  EventEmitter.prototype.emit = function() {
+    var e = arguments[0];
     if (!this._events[e]) {
       this._events[e] = {
         listeners: []
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      this._events[e].listeners[i](data);
+      this._events[e].listeners[i].apply(this._events[e].listeners[i], arguments.slice(1));
     }
     return this;
   }
@@ -87,6 +95,29 @@
         return this.getElementsByClassName(str.substr(1));
       }
       return this.getElementsByTagName(str);
+    }
+    doc.prototype.create = function(opt, obj) {
+      if (typeof opt === 'string' && typeof obj === 'undefined') {
+        return this._origCreateElement(opt);
+      }
+      if (typeof opt === 'string' && typeof obj === 'object') {
+        var elm = this._origCreateElement(opt);
+        if (typeof obj.css !== 'undefined') {
+          for (var i in obj.css) {
+            elm.style[i] = obj.css[i];
+          }
+        }
+        if (typeof obj.style !== 'undefined') {
+          for (var i in obj.style) {
+            elm.style[i] = obj.style[i];
+          }
+        }
+        for (var i in obj) {
+          if (i === 'style') continue;
+          elm[i] = obj[i];
+        }
+        return elm;
+      }
     }
     /* End Document prototype extensions */
 

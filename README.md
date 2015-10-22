@@ -3,7 +3,8 @@ A mini script of utilities for Node and the Browser.<br>
 This DOES extend the prototype of some things.
 
 ## Cross-environment Utils:
-  * isNode() - Boolean - Is the script running under Node?
+  * isNode() - Boolean - Is the script running in Node?
+  * isBrowser() - Boolean - Is the script running in a browser?
   * isWebWorker() - Boolean - Is the script running in a WebWorker?
   * inherits(class, superClass) - undefined - Minimal implementation of Node's `inherits`.
   * guid() - String - Generate a GUID (well, a pseudo-GUID).
@@ -12,6 +13,7 @@ This DOES extend the prototype of some things.
 ## Browser-Only Utils:
   * Document/HTMLDocument Extensions:
     * get(String) - HTMLElement - Get an element based on a query string (only accepts '#id', '.class', or 'tagName').
+    * create(String[, Object]) - HTMLElement - Create an element from a tag, and optionally initialize it with properties from the second argument.
   * HTMLElement Extensions:
     * remove() - this - Remove the current element.
     * text([String]) - String/this - If given no parameters, returns the element's text. If given the first parameter, replaces the element's text with the new text.
