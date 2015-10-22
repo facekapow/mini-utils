@@ -1,0 +1,27 @@
+{
+  "name": "mini-utils",
+  "description": "A mini script of utilities for Node and the Browser.",
+  "main": "mini-utils.js",
+  "authors": [
+    "facekapow"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "mini",
+    "utils",
+    "mini-utils",
+    "utilities"
+  ],
+  "homepage": "https://github.com/facekapow/mini-utils",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
