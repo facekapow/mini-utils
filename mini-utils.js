@@ -55,8 +55,10 @@
 
   /* EventEmitter */
   function EventEmitter() {
-    this._events = {};
+    // nothing
   }
+
+  EventEmitter.prototype._events = {};
 
   EventEmitter.prototype.on = function(e, cb) {
     if (!this._events[e]) {
@@ -70,13 +72,17 @@
 
   EventEmitter.prototype.emit = function() {
     var e = arguments[0];
+    var data = [];
+    for (var i = 0; i < arguments.length; i++) {
+      data.push(arguments[i]);
+    }
     if (!this._events[e]) {
       this._events[e] = {
         listeners: []
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      this._events[e].listeners[i].apply(this._events[e].listeners[i], arguments.slice(1));
+      this._events[e].listeners[i].apply(this._events[e].listeners[i], data);
     }
     return this;
   }
