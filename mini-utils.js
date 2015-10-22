@@ -97,6 +97,10 @@
       this.addEventListener(ev, cb);
       return this;
     }
+    doc.prototype.ready = function(cb) {
+      this.addEventListener('DOMContentLoaded', cb);
+      return this;
+    }
     doc.prototype.get = function(str) {
       if (str.substr(0, 1) === '#') {
         return this.getElementById(str.substr(1));
@@ -132,23 +136,24 @@
     /* End Document prototype extensions */
 
     /* HTMLElement prototype extensions */
-    HTMLElement.prototype.on = function(ev, cb) {
+    var elm = HTMLElement || Element;
+    elm.prototype.on = function(ev, cb) {
       this.addEventListener(ev, cb);
       return this;
     }
 
-    HTMLElement.prototype.remove = function() {
+    elm.prototype.remove = function() {
       this.parentElement.removeChild(this);
       return this;
     }
 
-    HTMLElement.prototype.text = function(val) {
+    elm.prototype.text = function(val) {
       if (!val) return this.textContent;
       this.textContent = val;
       return this;
     }
 
-    HTMLElement.prototype.css = function(props, val) {
+    elm.prototype.css = function(props, val) {
       if (typeof props === 'string') {
         if (!val) return this.style[props];
         this.style[props] = val;
@@ -176,7 +181,7 @@
       }
     }
 
-    HTMLElement.prototype.hasMultipleOfClass = function(classToSearch) {
+    elm.prototype.hasMultipleOfClass = function(classToSearch) {
       var arr = this.className.split(' ');
       var times_found = 0;
       for (var i = 0; i < arr.length; i++) {
@@ -187,7 +192,7 @@
       return (times_found > 1) ? true : false;
     }
 
-    HTMLElement.prototype.hasClass = function(classToSearch) {
+    elm.prototype.hasClass = function(classToSearch) {
       var arr = this.className.split(' ');
       var found = false;
       for (var i = 0; i < arr.length; i++) {
@@ -198,12 +203,12 @@
       return found;
     }
 
-    HTMLElement.prototype.addClass = function(classToAdd) {
+    elm.prototype.addClass = function(classToAdd) {
       this.className += ' ' + classToAdd;
       return this;
     }
 
-    HTMLElement.prototype.removeClass = function(classToRemove) {
+    elm.prototype.removeClass = function(classToRemove) {
       var arr = this.className.split(' ');
       for (var i = 0; i < arr.length; i++) {
         if (arr[i] === classToRemove) {

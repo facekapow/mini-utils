@@ -13,6 +13,7 @@ This DOES extend the prototype of some things.
 ## Browser-Only Utils:
   * Document/HTMLDocument Extensions:
     * on(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * ready(Function) - this - When the document is ready, the callback function is called.
     * get(String) - HTMLElement - Get an element based on a query string (only accepts '#id', '.class', or 'tagName').
     * create(String[, Object]) - HTMLElement - Create an element from a tag, and optionally initialize it with properties from the second argument.
   * HTMLElement Extensions:
