@@ -93,6 +93,10 @@
   if (!exports.isWebWorker() && !exports.isNode()) {
     /* Document prototype extensions */
     var doc = HTMLDocument || Document;
+    doc.prototype.on = function(ev, cb) {
+      this.addEventListener(ev, cb);
+      return this;
+    }
     doc.prototype.get = function(str) {
       if (str.substr(0, 1) === '#') {
         return this.getElementById(str.substr(1));
@@ -128,6 +132,11 @@
     /* End Document prototype extensions */
 
     /* HTMLElement prototype extensions */
+    HTMLElement.prototype.on = function(ev, cb) {
+      this.addEventListener(ev, cb);
+      return this;
+    }
+
     HTMLElement.prototype.remove = function() {
       this.parentElement.removeChild(this);
       return this;
