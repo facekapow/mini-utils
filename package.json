@@ -1,0 +1,25 @@
+{
+  "name": "mini-utils",
+  "version": "0.0.1",
+  "description": "A mini script of utilities for Node and the Browser.",
+  "main": "mini-utils.js",
+  "scripts": {
+    "test": "echo \"No test\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facekapow/mini-utils.git"
+  },
+  "keywords": [
+    "mini",
+    "utils",
+    "mini-utils",
+    "utilities"
+  ],
+  "author": "facekapow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facekapow/mini-utils/issues"
+  },
+  "homepage": "https://github.com/facekapow/mini-utils#readme"
+}
