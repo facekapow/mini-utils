@@ -98,10 +98,10 @@
     }
     doc.prototype.create = function(opt, obj) {
       if (typeof opt === 'string' && typeof obj === 'undefined') {
-        return this._origCreateElement(opt);
+        return this.createElement(opt);
       }
       if (typeof opt === 'string' && typeof obj === 'object') {
-        var elm = this._origCreateElement(opt);
+        var elm = this.createElement(opt);
         if (typeof obj.css !== 'undefined') {
           for (var i in obj.css) {
             elm.style[i] = obj.css[i];
