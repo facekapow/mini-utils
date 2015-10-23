@@ -23,7 +23,10 @@ This DOES extend the prototype of some things.
     * hasMultipleOfClass(String) - Boolean - Check if the element has multiple occurrences of a class.
     * hasClass(String) - Boolean - Check if the element has a certain class.
     * addClass(String) - this - Add the specified class to the element.
-    * removeClass(String) - this - Remoce the specified class to the element.
+    * removeClass(String) - this - Remove the specified class to the element.
+    * hide() - this - Hide the element.
+    * show() - this - Show the element.
+    * toggle() - this - Toggle the display state of the element.
     * css(String/Object/Array[, String/Array]) - String/undefined, throws! - Easier with a table:
 
 |         First parameter         |         Second parameter         |       Return Value      |

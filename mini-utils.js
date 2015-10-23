@@ -218,6 +218,25 @@
       this.className = arr.join(' ');
       return this;
     }
+
+    elm.prototype.hide = function() {
+      this.style.display = 'none';
+      return this;
+    }
+
+    elm.prototype.show = function() {
+      this.style.display = '';
+      return this;
+    }
+
+    elm.prototype.toggle = function() {
+      if (this.style.display === 'none') {
+        this.style.display = '';
+      } else {
+        this.style.display = 'none';
+      }
+      return this;
+    }
     /* End HTMLElement prototype extensions */
   }
 });
