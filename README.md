@@ -1,4 +1,4 @@
-# mini-utils [![npm version](https://badge.fury.io/js/mini-utils.svg)](https://badge.fury.io/js/mini-utils) [![Bower version](https://badge.fury.io/bo/mini-util.svg)](https://badge.fury.io/bo/mini-util)
+# mini-utils [![npm](https://img.shields.io/npm/v/mini-utils.svg)](https://www.npmjs.com/package/mini-utils) [![Bower](https://img.shields.io/bower/v/mini-util.svg)](http://bower.io/search/?q=mini-util)
 A mini script of utilities for Node and the Browser.<br>
 This DOES extend the prototype of some things.
 
