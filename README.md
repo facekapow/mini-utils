@@ -2,7 +2,29 @@
 A mini script of utilities for Node and the Browser.<br>
 This DOES extend the prototype of some things.
 
-## Cross-environment Utils:
+## Install
+Node:
+```bash
+npm install mini-utils
+```
+With Node, just `require()` it.
+
+Bower:
+```bash
+bower install mini-util
+```
+With Bower, the script must be included, so, add this to your HTML `<head>`:
+```html
+<script src="/path/to/your/bower_components/mini-util/mini-utils.min.js"></script>
+```
+Also with Bower, if you want to use the script in a WebWorker, in the WebWorker you must:
+```js
+importScripts('/path/to/your/bower_components/mini-util/mini-utils.min.js');
+```
+
+## List of utilities:
+
+### Cross-environment Utils:
   * isNode() - Boolean - Is the script running in Node?
   * isBrowser() - Boolean - Is the script running in a browser?
   * isWebWorker() - Boolean - Is the script running in a WebWorker?
@@ -10,7 +32,7 @@ This DOES extend the prototype of some things.
   * guid() - String - Generate a GUID (well, a pseudo-GUID).
   * EventEmitter() - Class - Minimal implementation of Node's `EventEmitter`.
 
-## WebWorker-Only Utils:
+### WebWorker-Only Utils:
   * self Extensions:
     * emit(String/data[, ...data]) - this - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data.
     * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
@@ -48,5 +70,5 @@ This DOES extend the prototype of some things.
 |  Object - Object of properties  |               this               |           this          |
 | Array - Array of property names | Array - Array of property values |           this          |
 
-## Node-Only Utils:
+### Node-Only Utils:
 None yet.
