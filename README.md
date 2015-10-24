@@ -10,14 +10,26 @@ This DOES extend the prototype of some things.
   * guid() - String - Generate a GUID (well, a pseudo-GUID).
   * EventEmitter() - Class - Minimal implementation of Node's `EventEmitter`.
 
+## WebWorker-Only Utils:
+  * self Extensions:
+    * emit(String/data[, ...data]) - this - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data.
+    * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * once(String, Function) - this - Can act like `onmessage` when given 'message' as the event (except only fires once). When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
+
 ## Browser-Only Utils:
+  * Worker Extensions:
+    * emit(String/data[, ...data]) - this - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data.
+    * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * once(String, Function) - this - Can act like `onmessage` when given 'message' as the event (except only fires once). When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
   * Document/HTMLDocument Extensions:
     * on(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * once(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
     * ready(Function) - this - When the document is ready, the callback function is called.
     * get(String) - HTMLElement - Get an element based on a query string (only accepts '#id', '.class', or 'tagName').
     * create(String[, Object]) - HTMLElement - Create an element from a tag, and optionally initialize it with properties from the second argument.
   * HTMLElement Extensions:
     * on(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * once(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
     * remove() - this - Remove the current element.
     * text([String]) - String/this - If given no parameters, returns the element's text. If given the first parameter, replaces the element's text with the new text.
     * hasMultipleOfClass(String) - Boolean - Check if the element has multiple occurrences of a class.

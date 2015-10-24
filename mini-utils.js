@@ -1,13 +1,13 @@
 'use strict';
 
-(function(cb) {
+(function(globalScope, cb) {
   if (typeof require !== 'undefined' && typeof define === 'undefined') {
     cb(module.exports, true);
   } else {
-    window.miniUtils = {};
-    cb(window.miniUtils, false);
+    globalScope.miniUtils = {};
+    cb(globalScope.miniUtils, false);
   }
-})(function(exports, isNode) {
+})(this, function(exports, isNode) {
   /* isNode */
   exports.isNode = function() {
     return isNode;
@@ -66,7 +66,23 @@
         listeners: []
       }
     }
-    this._events[e].listeners.push(cb);
+    this._events[e].listeners.push({
+      func: cb,
+      once: false
+    });
+    return this;
+  }
+
+  EventEmitter.prototype.once = function(e, cb) {
+    if (!this._events[e]) {
+      this._events[e] = {
+        listeners: []
+      }
+    }
+    this._events[e].listeners.push({
+      func: cb,
+      once: true
+    });
     return this;
   }
 
@@ -82,7 +98,10 @@
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      this._events[e].listeners[i].apply(this._events[e].listeners[i], data);
+      this._events[e].listeners[i].func.apply(this._events[e].listeners[i].func, data);
+      if (this._events[e].listeners[i].once) {
+        this._events[e].listeners = this._events[e].listeners.splice(i, 1);
+      }
     }
     return this;
   }
@@ -90,11 +109,205 @@
   exports.EventEmitter = EventEmitter;
   /* End EventEmitter */
 
-  if (!exports.isWebWorker() && !exports.isNode()) {
+  if (!exports.isBrowser() && !exports.isNode() && exports.isWebWorker()) {
+    /* WebWorker self extensions */
+    self._events = {};
+    self.addEventListener('message', function(message) {
+      var data = message.data;
+      var jsonData;
+      try {
+        jsonData = JSON.parse(data);
+      } catch(e) {
+        return;
+      }
+
+      if (jsonData.isMiniUtilsEvent && jsonData.ev && jsonData.data) {
+        if (!self._events[jsonData.ev]) {
+          self._events[jsonData.ev] = {
+            listeners: []
+          }
+        }
+        for (var i = 0; i < self._events[jsonData.ev].listeners.length; i++) {
+          self._events[jsonData.ev].listeners[i].func.apply(self._events[jsonData.ev].listeners[i].func, jsonData.data);
+          if (self._events[jsonData.ev].listeners[i].once) {
+            self._events[jsonData.ev].listeners = self._events[jsonData.ev].listeners.splice(i, 1);
+          }
+        }
+      }
+    });
+    self.on = function(ev, cb) {
+      if (ev === 'message') {
+        self.addEventListener('message', cb);
+        return this;
+      }
+
+      if (!self._events[ev]) {
+        self._events[ev] = {
+          listeners: []
+        }
+      }
+      self._events[ev].listeners.push({
+        func: cb,
+        once: false
+      });
+      return this;
+    }
+    self.once = function(ev, cb) {
+      if (ev === 'message') {
+        function listener() {
+          cb();
+          self.removeEventListener('message', listener);
+        }
+        self.addEventListener('message', listener);
+        return this;
+      }
+
+      if (!self._events[ev]) {
+        self._events[ev] = {
+          listeners: []
+        }
+      }
+      self._events[ev].listeners.push({
+        func: cb,
+        once: true
+      });
+      return this;
+    }
+    self.emit = function() {
+      var e = arguments[0];
+      if (typeof e !== 'string') {
+        self.postMessage(e);
+      } else {
+        var data = [];
+        for (var i = 0; i < arguments.length; i++) {
+          data.push(arguments[i]);
+        }
+        self.postMessage(JSON.stringify({
+          isMiniUtilsEvent: true,
+          ev: e,
+          data: data
+        }));
+      }
+
+      return this;
+    }
+    /* End WebWorker self extensions */
+  }
+
+  if (!exports.isWebWorker() && !exports.isNode() && exports.isBrowser()) {
+    /* Worker (WebWorker) prototype extensions */
+    function appendEmitter(worker) {
+      worker.addEventListener('message', function(message) {
+        var data = message.data;
+        var jsonData;
+        try {
+          jsonData = JSON.parse(data);
+        } catch(e) {
+          return;
+        }
+
+        if (jsonData.isMiniUtilsEvent && jsonData.ev && jsonData.data) {
+          if (!worker._events[jsonData.ev]) {
+            worker._events[jsonData.ev] = {
+              listeners: []
+            }
+          }
+          for (var i = 0; i < worker._events[jsonData.ev].listeners.length; i++) {
+            worker._events[jsonData.ev].listeners[i].func.apply(worker._events[jsonData.ev].listeners[i].func, jsonData.data);
+            if (worker._events[jsonData.ev].listeners[i].once) {
+              worker._events[jsonData.ev].listeners = worker._events[jsonData.ev].listeners.splice(i, 1);
+            }
+          }
+        }
+      });
+      worker._emitterAppended = true;
+    }
+    Worker.prototype._events = {};
+    Worker.prototype.on = function(ev, cb) {
+      if (!this._emitterAppended) {
+        appendEmitter(this);
+      }
+
+      if (ev === 'message') {
+        this.addEventListener('message', cb);
+        return this;
+      }
+
+      if (!this._events[ev]) {
+        this._events[ev] = {
+          listeners: []
+        }
+      }
+      this._events[ev].listeners.push({
+        func: cb,
+        once: false
+      });
+      return this;
+    }
+    Worker.prototype.once = function(ev, cb) {
+      if (!this._emitterAppended) {
+        appendEmitter(this);
+      }
+
+      if (ev === 'message') {
+        var self = this;
+        function listener() {
+          cb();
+          self.removeEventListener('message', listener);
+        }
+        this.addEventListener('message', listener);
+        return this;
+      }
+
+      if (!this._events[ev]) {
+        this._events[ev] = {
+          listeners: []
+        }
+      }
+      this._events[ev].listeners.push({
+        func: cb,
+        once: true
+      });
+      return this;
+    }
+    Worker.prototype.emit = function() {
+      if (!this._emitterAppended) {
+        appendEmitter(this);
+      }
+
+      var e = arguments[0];
+
+      if (typeof e !== 'string') {
+        this.postMessage(e);
+      } else {
+        var data = [];
+        for (var i = 0; i < arguments.length; i++) {
+          data.push(arguments[i]);
+        }
+        this.postMessage(JSON.stringify({
+          isMiniUtilsEvent: true,
+          ev: e,
+          data: data
+        }));
+      }
+
+      return this;
+    }
+    /* End Worker prototype extensions */
+
     /* Document prototype extensions */
     var doc = HTMLDocument || Document;
     doc.prototype.on = function(ev, cb) {
       this.addEventListener(ev, cb);
+      return this;
+    }
+    doc.prototype.once = function(ev, cb) {
+      var self = this;
+      function listener() {
+        cb();
+        self.removeEventListener(ev, listener);
+      }
+      this.addEventListener(ev, listener);
       return this;
     }
     doc.prototype.ready = function(cb) {
@@ -139,6 +352,16 @@
     var elm = HTMLElement || Element;
     elm.prototype.on = function(ev, cb) {
       this.addEventListener(ev, cb);
+      return this;
+    }
+
+    elm.prototype.once = function(ev, cb) {
+      var self = this;
+      function listener() {
+        cb();
+        self.removeEventListener(ev, listener);
+      }
+      this.addEventListener(ev, listener);
       return this;
     }
 
