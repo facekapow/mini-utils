@@ -1,6 +1,7 @@
 # mini-utils [![npm](https://img.shields.io/npm/v/mini-utils.svg)](https://www.npmjs.com/package/mini-utils) [![Bower](https://img.shields.io/bower/v/mini-util.svg)](http://bower.io/search/?q=mini-util)
 A mini script of utilities for Node and the Browser.<br>
-This DOES extend the prototype of some things.
+This DOES extend the prototype of some things.<br>
+2.0kb minified and gzipped.
 
 ## Install
 Node:
@@ -34,15 +35,19 @@ importScripts('/path/to/your/bower_components/mini-util/mini-utils.min.js');
 
 ### WebWorker-Only Utils:
   * self Extensions:
-    * emit(String/data[, ...data]) - this - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data.
+    * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
     * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
     * once(String, Function) - this - Can act like `onmessage` when given 'message' as the event (except only fires once). When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
+    * removeListener(String, Function) - this - If found, and it matches the second parameter, the callback function for an the event specified in the first parameter is removed.
+    * removeAllListeners(String) - this - Removes all listeners for the event specified in the first parameter.
 
 ## Browser-Only Utils:
   * Worker Extensions:
-    * emit(String/data[, ...data]) - this - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data.
+    * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
     * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
     * once(String, Function) - this - Can act like `onmessage` when given 'message' as the event (except only fires once). When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
+    * removeListener(String, Function) - this - If found, and it matches the second parameter, the callback function for an the event specified in the first parameter is removed.
+    * removeAllListeners(String) - this - Removes all listeners for the event specified in the first parameter.
   * Document/HTMLDocument Extensions:
     * on(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called.
     * once(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.

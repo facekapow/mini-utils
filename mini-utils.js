@@ -66,11 +66,53 @@
         listeners: []
       }
     }
+    this.emit('newListener', e, cb);
     this._events[e].listeners.push({
       func: cb,
       once: false
     });
     return this;
+  }
+
+  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+  EventEmitter.prototype.removeListener = function(e, cb) {
+    if (!this._events[e]) {
+      this._events[e] = {
+        listeners: []
+      }
+    }
+    for (var i = 0; i < this._events[e].listeners.length; i++) {
+      if (this._events[e].listeners[i].func === cb) {
+        var listener = this._events[e].listeners.splice(i, 1);
+        this.emit('removeListener', e, listener.func);
+        break;
+      }
+    }
+    return this;
+  }
+
+  EventEmitter.prototype.removeAllListeners = function(e) {
+    if (!this._events[e]) {
+      this._events[e] = {
+        listeners: []
+      }
+    }
+    for (var i = 0; i < this._events[e].listeners.length; i++) {
+      var listener = this._events[e].listeners.splice(i, 1);
+      this.emit('removeListener', e, listener.func);
+    }
+    return this;
+  }
+
+  EventEmitter.prototype.listeners = function(e) {
+    if (!this._events[e]) {
+      this._events[e] = {
+        listeners: []
+      }
+    }
+
+    return this._events[e].listeners;
   }
 
   EventEmitter.prototype.once = function(e, cb) {
@@ -79,6 +121,7 @@
         listeners: []
       }
     }
+    this.emit('newListener', e, cb);
     this._events[e].listeners.push({
       func: cb,
       once: true
@@ -89,7 +132,7 @@
   EventEmitter.prototype.emit = function() {
     var e = arguments[0];
     var data = [];
-    for (var i = 0; i < arguments.length; i++) {
+    for (var i = 1; i < arguments.length; i++) {
       data.push(arguments[i]);
     }
     if (!this._events[e]) {
@@ -99,11 +142,14 @@
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
       this._events[e].listeners[i].func.apply(this._events[e].listeners[i].func, data);
-      if (this._events[e].listeners[i].once) {
-        this._events[e].listeners = this._events[e].listeners.splice(i, 1);
+      if (this._events[jsonData.ev].listeners[i] && this._events[e].listeners[i].once) {
+        this._events[e].listeners.splice(i, 1);
       }
     }
-    return this;
+    if (this._events[e].listeners.length === 0) {
+      return false;
+    }
+    return true;
   }
 
   exports.EventEmitter = EventEmitter;
@@ -129,8 +175,8 @@
         }
         for (var i = 0; i < self._events[jsonData.ev].listeners.length; i++) {
           self._events[jsonData.ev].listeners[i].func.apply(self._events[jsonData.ev].listeners[i].func, jsonData.data);
-          if (self._events[jsonData.ev].listeners[i].once) {
-            self._events[jsonData.ev].listeners = self._events[jsonData.ev].listeners.splice(i, 1);
+          if (self._events[jsonData.ev].listeners[i] && self._events[jsonData.ev].listeners[i].once) {
+            self._events[jsonData.ev].listeners.splice(i, 1);
           }
         }
       }
@@ -146,6 +192,7 @@
           listeners: []
         }
       }
+      self.emit('newListener', ev, cb);
       self._events[ev].listeners.push({
         func: cb,
         once: false
@@ -167,10 +214,39 @@
           listeners: []
         }
       }
+      self.emit('newListener', ev, cb);
       self._events[ev].listeners.push({
         func: cb,
         once: true
       });
+      return this;
+    }
+    self.removeListener = function(e, cb) {
+      if (!self._events[e]) {
+        self._events[e] = {
+          listeners: []
+        }
+      }
+      for (var i = 0; i < self._events[e].listeners.length; i++) {
+        if (self._events[e].listeners[i].func === cb) {
+          var listener = self._events[e].listeners.splice(i, 1);
+          self.emit('removeListener', e, listener.func);
+          break;
+        }
+      }
+      return this;
+    }
+
+    self.removeAllListeners = function(e) {
+      if (!self._events[e]) {
+        self._events[e] = {
+          listeners: []
+        }
+      }
+      for (var i = 0; i < self._events[e].listener.length; i++) {
+        var listener = self._events[e].listeners.splice(i, 1);
+        self.emit('removeListener', e, listener.func);
+      }
       return this;
     }
     self.emit = function() {
@@ -179,7 +255,7 @@
         self.postMessage(e);
       } else {
         var data = [];
-        for (var i = 0; i < arguments.length; i++) {
+        for (var i = 1; i < arguments.length; i++) {
           data.push(arguments[i]);
         }
         self.postMessage(JSON.stringify({
@@ -214,8 +290,8 @@
           }
           for (var i = 0; i < worker._events[jsonData.ev].listeners.length; i++) {
             worker._events[jsonData.ev].listeners[i].func.apply(worker._events[jsonData.ev].listeners[i].func, jsonData.data);
-            if (worker._events[jsonData.ev].listeners[i].once) {
-              worker._events[jsonData.ev].listeners = worker._events[jsonData.ev].listeners.splice(i, 1);
+            if (worker._events[jsonData.ev].listeners[i] && worker._events[jsonData.ev].listeners[i].once) {
+              worker._events[jsonData.ev].listeners.splice(i, 1);
             }
           }
         }
@@ -238,6 +314,7 @@
           listeners: []
         }
       }
+      this.emit('newListener', ev, cb);
       this._events[ev].listeners.push({
         func: cb,
         once: false
@@ -264,10 +341,39 @@
           listeners: []
         }
       }
+      this.emit('newListener', ev, cb);
       this._events[ev].listeners.push({
         func: cb,
         once: true
       });
+      return this;
+    }
+    Worker.prototype.removeListener = function(e, cb) {
+      if (!this._events[e]) {
+        this._events[e] = {
+          listeners: []
+        }
+      }
+      for (var i = 0; i < this._events[e].listeners.length; i++) {
+        if (this._events[e].listeners[i].func === cb) {
+          var listener = this._events[e].listeners.splice(i, 1);
+          this.emit('removeListener', e, listener.func);
+          break;
+        }
+      }
+      return this;
+    }
+
+    Worker.prototype.removeAllListeners = function(e) {
+      if (!this._events[e]) {
+        this._events[e] = {
+          listeners: []
+        }
+      }
+      for (var i = 0; i < this._events[e].listeners.length; i++) {
+        var listener = this._events[e].listeners.splice(i, 1);
+        this.emit('removeListener', e, listener.func);
+      }
       return this;
     }
     Worker.prototype.emit = function() {
@@ -281,7 +387,7 @@
         this.postMessage(e);
       } else {
         var data = [];
-        for (var i = 0; i < arguments.length; i++) {
+        for (var i = 1; i < arguments.length; i++) {
           data.push(arguments[i]);
         }
         this.postMessage(JSON.stringify({
