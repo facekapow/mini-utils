@@ -142,7 +142,7 @@
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
       this._events[e].listeners[i].func.apply(this._events[e].listeners[i].func, data);
-      if (this._events[jsonData.ev].listeners[i] && this._events[e].listeners[i].once) {
+      if (this._events[e].listeners[i] && this._events[e].listeners[i].once) {
         this._events[e].listeners.splice(i, 1);
       }
     }
