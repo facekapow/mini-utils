@@ -32,7 +32,7 @@
 
   /* inherits */
   exports.inherits = function(obj, parent) {
-    obj._super = parent;
+    obj.super_ = parent;
     obj.prototype = Object.create(parent.prototype, {
       constructor: {
         value: obj,
@@ -67,11 +67,52 @@
       }
     }
     this.emit('newListener', e, cb);
-    this._events[e].listeners.push({
-      func: cb,
-      once: false
-    });
+    this._events[e].listeners.push(cb);
+    if (this._events[e].listeners.length > this.getMaxListeners()) {
+      console.log('(miniUtils) warning: possible EventEmitter memory leak detected. ' + this._events[e].listeners.length + ' ' + e + ' listeners added. Use emitter.setMaxListeners() to increase limit.');
+      console.trace();
+    }
     return this;
+  }
+
+  EventEmitter.defaultMaxListeners = 10;
+
+  EventEmitter.prototype._max = 10;
+
+  EventEmitter.prototype._maxModified = false;
+
+  EventEmitter.prototype.setMaxListeners = function(n) {
+    this._max = n;
+    this._maxModified = true;
+    return this;
+  }
+
+  EventEmitter.prototype.getMaxListeners = function() {
+    if (this._maxModified) {
+      return this._max;
+    } else {
+      return EventEmitter.defaultMaxListeners;
+    }
+  }
+
+  EventEmitter.prototype.listenerCount = function(ev) {
+    if (!this._events[ev]) {
+      this._events[ev] = {
+        listeners: []
+      }
+    }
+
+    return this._events[ev].listeners.length;
+  }
+
+  EventEmitter.listenerCount = function(emitter, ev) {
+    if (!emitter._events[ev]) {
+      emitter._events[ev] = {
+        listeners: []
+      }
+    }
+
+    return emitter._events[ev].listeners.length;
   }
 
   EventEmitter.prototype.addListener = EventEmitter.prototype.on;
@@ -83,9 +124,9 @@
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      if (this._events[e].listeners[i].func === cb) {
+      if (this._events[e].listeners[i] === cb) {
         var listener = this._events[e].listeners.splice(i, 1);
-        this.emit('removeListener', e, listener.func);
+        this.emit('removeListener', e, listener);
         break;
       }
     }
@@ -98,9 +139,10 @@
         listeners: []
       }
     }
-    for (var i = 0; i < this._events[e].listeners.length; i++) {
-      var listener = this._events[e].listeners.splice(i, 1);
-      this.emit('removeListener', e, listener.func);
+    var listenLength = this._events[e].listeners.length;
+    for (var i = 0; i < listenLength; i++) {
+      var listener = this._events[e].listeners.splice(0, 1);
+      this.emit('removeListener', e, listener);
     }
     return this;
   }
@@ -122,10 +164,20 @@
       }
     }
     this.emit('newListener', e, cb);
-    this._events[e].listeners.push({
-      func: cb,
-      once: true
-    });
+    var self = this;
+    function cbFunc() {
+      var data = [];
+      for (var i = 0; i < arguments.length; i++) {
+        data.push(arguments[i]);
+      }
+      cb.apply(cb, data);
+      self.removeListener(e, cbFunc);
+    }
+    this._events[e].listeners.push(cbFunc);
+    if (this._events[e].listeners.length > this.getMaxListeners()) {
+      console.log('(miniUtils) warning: possible EventEmitter memory leak detected. ' + this._events[e].listeners.length + ' ' + e + ' listeners added. Use emitter.setMaxListeners() to increase limit.');
+      console.trace();
+    }
     return this;
   }
 
@@ -141,10 +193,7 @@
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      this._events[e].listeners[i].func.apply(this._events[e].listeners[i].func, data);
-      if (this._events[e].listeners[i] && this._events[e].listeners[i].once) {
-        this._events[e].listeners.splice(i, 1);
-      }
+      this._events[e].listeners[i].apply(this._events[e].listeners[i], data);
     }
     if (this._events[e].listeners.length === 0) {
       return false;

@@ -31,7 +31,7 @@ importScripts('/path/to/your/bower_components/mini-util/mini-utils.min.js');
   * isWebWorker() - Boolean - Is the script running in a WebWorker?
   * inherits(class, superClass) - undefined - Minimal implementation of Node's `inherits`.
   * guid() - String - Generate a GUID (well, a pseudo-GUID).
-  * EventEmitter() - Class - Minimal implementation of Node's `EventEmitter`.
+  * EventEmitter() - Class - Minimal implementation of Node's `EventEmitter`. Full Node API is supported (including deprecated functions) (Node API link: https://nodejs.org/api/events.html).
 
 ### WebWorker-Only Utils:
   * self Extensions:
