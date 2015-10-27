@@ -4,23 +4,34 @@ This DOES extend the prototype of some things.<br>
 2.0kb minified and gzipped.
 
 ## Install
-Node:
+### Node:
 ```bash
 npm install mini-utils
 ```
-With Node, just `require()` it.
 
-Bower:
+### Bower:
 ```bash
 bower install mini-util
 ```
-With Bower, the script must be included, so, add this to your HTML `<head>`:
+
+## Usage
+### Node:
+```js
+var __ = require('mini-utils');
+```
+
+### Bower:
+Add this to your HTML `<head>`:
 ```html
 <script src="/path/to/your/bower_components/mini-util/mini-utils.min.js"></script>
 ```
-Also with Bower, if you want to use the script in a WebWorker, in the WebWorker you must:
+If you want to use the script in a WebWorker, in the WebWorker you must:
 ```js
 importScripts('/path/to/your/bower_components/mini-util/mini-utils.min.js');
+```
+Use the `__` variable to access mini-utils. Example:
+```js
+__.isNode();
 ```
 
 ## List of utilities:

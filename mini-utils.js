@@ -4,8 +4,8 @@
   if (typeof require !== 'undefined' && typeof define === 'undefined') {
     cb(module.exports, true);
   } else {
-    globalScope.miniUtils = {};
-    cb(globalScope.miniUtils, false);
+    globalScope.__ = {};
+    cb(globalScope.__, false);
   }
 })(this, function(exports, isNode) {
   /* isNode */
