@@ -17,7 +17,7 @@ bower install mini-util
 ## Usage
 ### Node:
 ```js
-var __ = require('mini-utils');
+var __ = require('mini-utils'); // Double underscore
 ```
 
 ### Bower:
@@ -31,7 +31,7 @@ importScripts('/path/to/your/bower_components/mini-util/mini-utils.min.js');
 ```
 Use the `__` variable to access mini-utils. Example:
 ```js
-__.isNode();
+__.isNode(); // Again, double underscore
 ```
 
 ## List of utilities:
