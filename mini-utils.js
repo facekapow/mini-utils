@@ -44,7 +44,7 @@
   }
   /* End inherits */
 
-  /* guid(), courtesy of http://stackoverflow.com/a/105074 */
+  /* guid(), courtesy of http://stackoverflow.com/a/105074/5119920 */
   exports.guid = function() {
     function S4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -52,6 +52,43 @@
     return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
   }
   /* End guid() */
+
+  /* clone, courtesy of http://stackoverflow.com/a/728694/5119920 */
+  exports.clone = function(obj) {
+    if (typeof obj !== 'object' || obj === null) return obj;
+    var copy = obj.constructor();
+    for (var i in obj) {
+      if (obj.hasOwnProperty(i)) copy[i] = obj[i];
+    }
+    return copy;
+  }
+  /* End clone */
+
+  /* nextTick */
+  exports.nextTick = function(cb) {
+    if (exports.isNode() && !exports.isBrowser() && !exports.isWebWorker()) {
+      if (process.nextTick) {
+        return process.nextTick(cb);
+      }
+      if (setImmediate) {
+        return setImmediate(cb);
+      }
+    } else if (!exports.isNode() && exports.isBrowser() && !exports.isWebWorker()) {
+      if (window.setImmediate) {
+        return window.setImmediate(cb);
+      }
+      var reqAnimFrame = window.requestAnimationFrame;
+      var prefixes = ['ms', 'moz', 'webkit', 'o'];
+      for (var i = 0; i < prefixes.length && !reqAnimFrame; i++) {
+        reqAnimFrame = window[prefixes[i] + 'RequestAnimationFrame'];
+      }
+      if (reqAnimFrame) {
+        return reqAnimFrame.call(window, cb);
+      }
+    }
+    return setTimeout(cb, 0);
+  }
+  /* End nextTick */
 
   /* EventEmitter */
   function EventEmitter() {
@@ -249,11 +286,11 @@
       return this;
     }
     self.once = function(ev, cb) {
+      function listener() {
+        cb();
+        self.removeEventListener('message', listener);
+      }
       if (ev === 'message') {
-        function listener() {
-          cb();
-          self.removeEventListener('message', listener);
-        }
         self.addEventListener('message', listener);
         return this;
       }
@@ -321,8 +358,9 @@
 
   if (!exports.isWebWorker() && !exports.isNode() && exports.isBrowser()) {
     /* Worker (WebWorker) prototype extensions */
-    function appendEmitter(worker) {
-      worker.addEventListener('message', function(message) {
+    Worker.prototype.appendEmitter = function() {
+      var worker = this;
+      this.addEventListener('message', function(message) {
         var data = message.data;
         var jsonData;
         try {
@@ -345,12 +383,12 @@
           }
         }
       });
-      worker._emitterAppended = true;
+      this._emitterAppended = true;
     }
     Worker.prototype._events = {};
     Worker.prototype.on = function(ev, cb) {
       if (!this._emitterAppended) {
-        appendEmitter(this);
+        this.appendEmitter();
       }
 
       if (ev === 'message') {
@@ -372,15 +410,15 @@
     }
     Worker.prototype.once = function(ev, cb) {
       if (!this._emitterAppended) {
-        appendEmitter(this);
+        this.appendEmitter();
       }
 
+      var self = this;
+      function listener() {
+        cb();
+        self.removeEventListener('message', listener);
+      }
       if (ev === 'message') {
-        var self = this;
-        function listener() {
-          cb();
-          self.removeEventListener('message', listener);
-        }
         this.addEventListener('message', listener);
         return this;
       }
@@ -398,6 +436,10 @@
       return this;
     }
     Worker.prototype.removeListener = function(e, cb) {
+      if (!this._emitterAppended) {
+        this.appendEmitter();
+      }
+
       if (!this._events[e]) {
         this._events[e] = {
           listeners: []
@@ -414,6 +456,10 @@
     }
 
     Worker.prototype.removeAllListeners = function(e) {
+      if (!this._emitterAppended) {
+        this.appendEmitter();
+      }
+
       if (!this._events[e]) {
         this._events[e] = {
           listeners: []
