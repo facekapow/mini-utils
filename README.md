@@ -46,6 +46,12 @@ __.isNode(); // Again, double underscore
   * nextTick(Function) - Unknown - A little nextTick shim (return depends on what method is used to achieve the shim).
   * clone(Object) - Object - Creates a clone of an object and returns it.
 
+### WebWorker & Browser Utils:
+  * import(String, Function) - undefined - Requests a script from the url given in the first option, and executes the code and calls the function in the second option (which should accept an error parameter and a parameter containing the exports from the requested script).
+  * importSync(String) - Object - Synchronous version of `import`. Returns the script's exports. WARNING: Uses synchronous version of XMLHttpRequest, which *may* hang the browser, **strongly advised to use the async version above**!
+  * easyRequest(String[, Function]) - undefined/data - Performs a GET XMLHttpRequest with the url from the first parameter. If given a callback function, this performs the XMLHttpRequest asynchronously and passes the data to the callback (callback should accept first option as an error, second option as data). If not given a callback, this performs the XMLHttpRequest synchronously and returns the data. **Advised to use the async version**!
+  * easyPost(String[, data[, Function]]) - undefined/data - Exactly like the easyRequest function above, except performs a POST request and sends the data in the second parameter. Again, **advised to use the async version**!
+
 ### WebWorker-Only Utils:
   * PROTO-EXTENSION - self Extensions:
     * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
@@ -81,12 +87,13 @@ __.isNode(); // Again, double underscore
     * toggle() - this - Toggle the display state of the element.
     * css(String/Object/Array[, String/Array]) - String/undefined, throws! - Easier with a table:
 
-|         First parameter         |         Second parameter         |       Return Value      |
-|:-------------------------------:|:--------------------------------:|:-----------------------:|
-|      String - Property name     |               this               | String - Property value |
-|      String - Property name     |      String - Property Value     |           this          |
-|  Object - Object of properties  |               this               |           this          |
-| Array - Array of property names | Array - Array of property values |           this          |
+|         First parameter         |         Second parameter         |            Return Value          |
+|:-------------------------------:|:--------------------------------:|:--------------------------------:|
+|      String - Property name     |             undefined            |       String - Property value    |
+|      String - Property name     |      String - Property Value     |                this              |
+|  Object - Object of properties  |             undefined            |                this              |
+| Array - Array of property names |             undefined            | Array - Array of property values |
+| Array - Array of property names | Array - Array of property values |                this              |
 
 ### Node-Only Utils:
 None yet.

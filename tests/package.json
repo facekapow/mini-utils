@@ -1,0 +1,18 @@
+{
+  "name": "browser-test",
+  "version": "1.0.0",
+  "description": "None",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"no test\"",
+    "start": "node server.js"
+  },
+  "author": "facekapow",
+  "license": "MIT",
+  "dependencies": {
+    "mime": "^1.3.4",
+    "mini-compress": "0.0.4",
+    "mini-file": "0.0.17",
+    "mini-route": "0.0.4"
+  }
+}

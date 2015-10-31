@@ -104,7 +104,10 @@
       }
     }
     this.emit('newListener', e, cb);
-    this._events[e].listeners.push(cb);
+    this._events[e].listeners.push({
+      func: cb,
+      once: false
+    });
     if (this._events[e].listeners.length > this.getMaxListeners()) {
       console.log('(miniUtils) warning: possible EventEmitter memory leak detected. ' + this._events[e].listeners.length + ' ' + e + ' listeners added. Use emitter.setMaxListeners() to increase limit.');
       console.trace();
@@ -161,9 +164,9 @@
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      if (this._events[e].listeners[i] === cb) {
+      if (this._events[e].listeners[i].func === cb) {
         var listener = this._events[e].listeners.splice(i, 1);
-        this.emit('removeListener', e, listener);
+        this.emit('removeListener', e, listener.func);
         break;
       }
     }
@@ -179,7 +182,7 @@
     var listenLength = this._events[e].listeners.length;
     for (var i = 0; i < listenLength; i++) {
       var listener = this._events[e].listeners.splice(0, 1);
-      this.emit('removeListener', e, listener);
+      this.emit('removeListener', e, listener.func);
     }
     return this;
   }
@@ -191,7 +194,13 @@
       }
     }
 
-    return this._events[e].listeners;
+    var arr = [];
+
+    for (var i = 0; i < this._events[e].listeners.length; i++) {
+      arr.push(this._events[e].listeners[i].func);
+    }
+
+    return arr;
   }
 
   EventEmitter.prototype.once = function(e, cb) {
@@ -201,16 +210,10 @@
       }
     }
     this.emit('newListener', e, cb);
-    var self = this;
-    function cbFunc() {
-      var data = [];
-      for (var i = 0; i < arguments.length; i++) {
-        data.push(arguments[i]);
-      }
-      cb.apply(cb, data);
-      self.removeListener(e, cbFunc);
-    }
-    this._events[e].listeners.push(cbFunc);
+    this._events[e].listeners.push({
+      func: cb,
+      once: true
+    });
     if (this._events[e].listeners.length > this.getMaxListeners()) {
       console.log('(miniUtils) warning: possible EventEmitter memory leak detected. ' + this._events[e].listeners.length + ' ' + e + ' listeners added. Use emitter.setMaxListeners() to increase limit.');
       console.trace();
@@ -230,7 +233,10 @@
       }
     }
     for (var i = 0; i < this._events[e].listeners.length; i++) {
-      this._events[e].listeners[i].apply(this._events[e].listeners[i], data);
+      this._events[e].listeners[i].func.apply(this._events[e].listeners[i].func, data);
+      if (this._events[e].listeners[i] && this._events[e].listeners[i].once) {
+        this._events[e].listeners.splice(i, 1);
+      }
     }
     if (this._events[e].listeners.length === 0) {
       return false;
@@ -582,12 +588,7 @@
         if (!val) return this.style[props];
         this.style[props] = val;
         return this;
-      } else if (typeof props === 'object') {
-        for (var prop in props) {
-          this.style[prop] = props[prop];
-        }
-        return this;
-      } else if (typeof props === 'array') {
+      } else if (props instanceof Array) {
         if (!val) {
           var ret = [];
           for (var i = 0; i < props.length; i++) {
@@ -597,7 +598,12 @@
         }
         if (props.length > val.length) throw new Error('element.css(): not enough values in value array argument.');
         for (var i = 0; i < props.length; i++) {
-          this.style[props[i]] = this.style[val[i]];
+          this.style[props[i]] = val[i];
+        }
+        return this;
+      } else if (typeof props === 'object') {
+        for (var prop in props) {
+          this.style[prop] = props[prop];
         }
         return this;
       } else {
@@ -622,13 +628,16 @@
       for (var i = 0; i < arr.length; i++) {
         if (arr[i] === classToSearch) {
           found = true;
+          break;
         }
       }
       return found;
     }
 
     elm.prototype.addClass = function(classToAdd) {
-      this.className += ' ' + classToAdd;
+      var spaceOrNot = ' ';
+      if (this.className === '') spaceOrNot = '';
+      this.className += spaceOrNot + classToAdd;
       return this;
     }
 
@@ -662,5 +671,107 @@
       return this;
     }
     /* End HTMLElement prototype extensions */
+  }
+
+  if (exports.isBrowser || exports.isWebWorker() && !exports.isNode()) {
+    /* import */
+    exports.import = function(url, cb) {
+      if (!cb) {
+        throw new Error('Must provide callback.');
+      }
+      if (!url) {
+        cb(new Error('Must provide URL.'), null);
+      }
+      var req = new XMLHttpRequest();
+      req.open('GET', url + '.js');
+      req.send();
+      var module = {
+        exports: {}
+      };
+      req.addEventListener('readystatechange', function() {
+        if (req.readyState === 4) {
+          var func = new Function('exports', '__', 'module', '__filename', '__dirname', req.responseText);
+          func(module.exports, exports, module, url + '.js', url.substr(0, url.lastIndexOf('/')));
+          cb(null, module.exports);
+        }
+      });
+    }
+    /* End import */
+
+    /* importSync */
+    exports.importSync = function(url) {
+      if (!url) {
+        throw new Error('Must provide URL.');
+      }
+      var req = new XMLHttpRequest();
+      req.open('GET', url + '.js', false);
+      req.send();
+      var module = {
+        exports: {}
+      };
+      var func = new Function('exports', '__', 'module', '__filename', '__dirname', req.responseText);
+      func(module.exports, exports, module, url + '.js', url.substr(0, url.lastIndexOf('/')));
+      return module.exports;
+    }
+    /* End importSync */
+
+    /* easyRequest */
+    exports.easyRequest = function(url, cb) {
+      if (!url) {
+        if (cb) {
+          return cb(new Error('Must provide url.'), null);
+        } else {
+          throw new Error('Must provide url.');
+        }
+      }
+      var req = new XMLHttpRequest();
+      req.addEventListener('readystatechange', function() {
+        if (req.readyState === 4) {
+          if (cb) {
+            cb(null, req.response);
+          }
+        }
+      });
+      if (cb) {
+        req.open('GET', url);
+      } else {
+        req.open('GET', url, false);
+      }
+      req.send();
+      if (!cb) {
+        return req.response;
+      }
+    }
+    /* End easyRequest */
+
+    /* easyPost */
+    exports.easyPost = function(url, data, cb) {
+      if (!data) data = null;
+      if (!url) {
+        if (cb) {
+          return cb(new Error('Must provide url.'), null);
+        } else {
+          throw new Error('Must provide url.');
+        }
+      }
+      var req = new XMLHttpRequest();
+      req.addEventListener('readystatechange', function() {
+        if (req.readyState === 4) {
+          if (cb) {
+            cb(null, req.response);
+          }
+        }
+      });
+      if (cb) {
+        req.open('POST', url);
+      } else {
+        req.open('POST', url, false);
+      }
+      req.send(data);
+      if (!cb) {
+        return req.response;
+      }
+    }
+    /* End easyPost */
   }
 });
