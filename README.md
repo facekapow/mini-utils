@@ -1,7 +1,7 @@
 # mini-utils [![npm](https://img.shields.io/npm/v/mini-utils.svg)](https://www.npmjs.com/package/mini-utils) [![Bower](https://img.shields.io/bower/v/mini-util.svg)](http://bower.io/search/?q=mini-util)
 A mini script of utilities for Node and the Browser.<br>
 This DOES extend the prototype of some things.<br>
-2.4kb minified and gzipped.
+2.8kb minified and gzipped.
 
 ## Install
 ### Node:
