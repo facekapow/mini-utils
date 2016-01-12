@@ -608,7 +608,7 @@
     }
 
     elm.prototype.html = function(val) {
-      if !(val) return this.innerHTML;
+      if (!val) return this.innerHTML;
       this.innerHTML = val;
       return this;
     }
