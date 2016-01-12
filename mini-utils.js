@@ -502,6 +502,30 @@
     }
     /* End Worker prototype extensions */
 
+    /* EventTarget extensions */
+    EventTarget.prototype.on = function(ev, cb) {
+      this.addEventListener(ev, cb);
+      return this;
+    }
+    EventTarget.prototype.once = function(ev, cb) {
+      var self = this;
+      function listener() {
+        cb();
+        self.removeEventListener(ev, listener);
+      }
+      this.addEventListener(ev, listener);
+      return this;
+    }
+    EventTarget.prototype.emit = function(ev) {
+      if (!ev) throw new Error('EventTarget.emit requires an event (Event or string)!');
+      if (!(ev instanceof Event)) ev = new Event(ev);
+      this.dispatchEvent(ev);
+    }
+    EventTarget.prototype.removeListener = function(e, cb) {
+      this.removeEventListener(e, cb);
+    }
+    /* End EventTarget extensions */
+
     /* Document prototype extensions */
     var doc = HTMLDocument || Document;
     doc.prototype.on = function(ev, cb) {
@@ -580,6 +604,12 @@
     elm.prototype.text = function(val) {
       if (!val) return this.textContent;
       this.textContent = val;
+      return this;
+    }
+
+    elm.prototype.html = function(val) {
+      if !(val) return this.innerHTML;
+      this.innerHTML = val;
       return this;
     }
 
@@ -690,6 +720,7 @@
       };
       req.addEventListener('readystatechange', function() {
         if (req.readyState === 4) {
+          if (req.status !== 200) return cb(new Error(req.statusText), null);
           var func = new Function('exports', '__', 'module', '__filename', '__dirname', req.responseText);
           func(module.exports, exports, module, url + '.js', url.substr(0, url.lastIndexOf('/')));
           cb(null, module.exports);
@@ -706,6 +737,7 @@
       var req = new XMLHttpRequest();
       req.open('GET', url + '.js', false);
       req.send();
+      if (req.status !== 200) throw new Error(req.statusText);
       var module = {
         exports: {}
       };

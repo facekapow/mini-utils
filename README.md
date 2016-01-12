@@ -61,6 +61,11 @@ __.isNode(); // Again, double underscore
     * removeAllListeners(String) - this - Removes all listeners for the event specified in the first parameter.
 
 ## Browser-Only Utils:
+  * PROTO-EXTENSION - EventTarget Extensions:
+    * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
+    * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
+    * once(String, Function) - this - Can act like `onmessage` when given 'message' as the event (except only fires once). When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
+    * removeListener(String, Function) - this - If found, and it matches the second parameter, the callback function for an the event specified in the first parameter is removed.
   * PROTO-EXTENSION - Worker Extensions:
     * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
     * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.
@@ -78,6 +83,7 @@ __.isNode(); // Again, double underscore
     * once(String, Function) - this - When the event specified in the first parameter is fired, the callback in the second parameter is called. After the callback is done, it is removed from the listeners for that event.
     * remove() - this - Remove the current element.
     * text([String]) - String/this - If given no parameters, returns the element's text. If given the first parameter, replaces the element's text with the new text.
+    * html([String]) - String/this - If given no parameters, returns the element's html. If given the first parameter, replaces the element's html with the new html.
     * hasMultipleOfClass(String) - Boolean - Check if the element has multiple occurrences of a class.
     * hasClass(String) - Boolean - Check if the element has a certain class.
     * addClass(String) - this - Add the specified class to the element.
