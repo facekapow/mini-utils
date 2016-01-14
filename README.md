@@ -40,13 +40,14 @@ __.isNode(); // Again, double underscore
   * isNode() - Boolean - Is the script running in Node?
   * isBrowser() - Boolean - Is the script running in a browser?
   * isWebWorker() - Boolean - Is the script running in a WebWorker?
+  * isElectron() - Boolean - Is the script running in Electron?
   * inherits(Class, Class) - undefined - Minimal implementation of Node's `inherits`. The first parameter is the class that inherits, and the second parameter is the superclass.
   * guid() - String - Generate a GUID (well, a pseudo-GUID).
   * EventEmitter() - Class - Minimal implementation of Node's `EventEmitter`. Full Node API is supported (including deprecated functions) (Node API link: https://nodejs.org/api/events.html).
   * nextTick(Function) - Unknown - A little nextTick shim (return depends on what method is used to achieve the shim).
   * clone(Object) - Object - Creates a clone of an object and returns it.
 
-### WebWorker & Browser Utils:
+### WebWorker & Browser Utils (includes Electron):
   * import(String, Function) - undefined - Requests a script from the url given in the first option, and executes the code and calls the function in the second option (which should accept an error parameter and a parameter containing the exports from the requested script).
   * importSync(String) - Object - Synchronous version of `import`. Returns the script's exports. WARNING: Uses synchronous version of XMLHttpRequest, which *may* hang the browser, **strongly advised to use the async version above**!
   * easyRequest(String[, Function]) - undefined/data - Performs a GET XMLHttpRequest with the url from the first parameter. If given a callback function, this performs the XMLHttpRequest asynchronously and passes the data to the callback (callback should accept first option as an error, second option as data). If not given a callback, this performs the XMLHttpRequest synchronously and returns the data. **Advised to use the async version**!
@@ -60,7 +61,7 @@ __.isNode(); // Again, double underscore
     * removeListener(String, Function) - this - If found, and it matches the second parameter, the callback function for an the event specified in the first parameter is removed.
     * removeAllListeners(String) - this - Removes all listeners for the event specified in the first parameter.
 
-## Browser-Only Utils:
+## Browser-Only Utils (includes Electron):
   * PROTO-EXTENSION - EventTarget Extensions:
     * emit(String/data[, ...data]) - Boolean - If the first parameter is not a string, it acts like `postMessage`. Otherwise, it emits the event specified in the first parameter, and optionally passes the rest of the arguments as extra data. Returns true if the event has listeners, false otherwise.
     * on(String, Function) - this - Can act like `onmessage` when given 'message' as the event. When the event specified in the first parameter is fired, the callback in the second parameter is called.

@@ -30,6 +30,12 @@
   }
   /* End isWebWorker */
 
+  /* isElectron */
+  exports.isElectron = function() {
+    return (exports.isNode() && exports.isBrowser());
+  }
+  /* End isElectron */
+
   /* inherits */
   exports.inherits = function(obj, parent) {
     obj.super_ = parent;
@@ -362,7 +368,7 @@
     /* End WebWorker self extensions */
   }
 
-  if (!exports.isWebWorker() && !exports.isNode() && exports.isBrowser()) {
+  if ((!exports.isWebWorker() && !exports.isNode() && exports.isBrowser()) || exports.isElectron()) {
     /* Worker (WebWorker) prototype extensions */
     Worker.prototype.appendEmitter = function() {
       var worker = this;
@@ -703,7 +709,7 @@
     /* End HTMLElement prototype extensions */
   }
 
-  if (exports.isBrowser || exports.isWebWorker() && !exports.isNode()) {
+  if ((exports.isBrowser || exports.isWebWorker() && !exports.isNode()) || exports.isElectron()) {
     /* import */
     exports.import = function(url, cb) {
       if (!cb) {

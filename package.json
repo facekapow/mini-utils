@@ -1,6 +1,6 @@
 {
   "name": "mini-utils",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A mini script of utilities for Node and the Browser.",
   "main": "mini-utils.js",
   "scripts": {
