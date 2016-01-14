@@ -571,13 +571,21 @@
             elm.style[i] = obj.css[i];
           }
         }
-        if (typeof obj.style !== 'undefined') {
-          for (var i in obj.style) {
-            elm.style[i] = obj.style[i];
-          }
+        var manuals = {
+          'style': true,
+          'dataset': true
+        }
+        for (var prop in manuals) {
+          (function(prop) {
+            if (typeof obj[prop] !== 'undefined' && obj[prop] !== null) {
+              for (var i in obj[prop]) {
+                elm[prop][i] = obj[prop][i];
+              }
+            }
+          })(prop);
         }
         for (var i in obj) {
-          if (i === 'style') continue;
+          if (manuals[i]) continue;
           elm[i] = obj[i];
         }
         return elm;
