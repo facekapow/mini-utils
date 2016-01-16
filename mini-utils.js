@@ -627,6 +627,20 @@
       return this;
     }
 
+    elm.prototype.centerToWindow = function(hOrV) {
+      if (typeof hOrV === 'undefined' || hOrV === null) {
+        this.style.marginLeft = ((window.innerWidth/2)-(this.offsetWidth/2)) + 'px';
+        this.style.marginTop = ((window.innerHeight/2)-(this.offsetHeight/2)) + 'px';
+      } else if (hOrV === true) {
+        // horizontal
+        this.style.marginLeft = ((window.innerWidth/2)-(this.offsetWidth/2)) + 'px';
+      } else if (hOrV === false) {
+        // vertical
+        this.style.marginTop = ((window.innerHeight/2)-(this.offsetHeight/2)) + 'px';
+      }
+      return this;
+    }
+
     elm.prototype.css = function(props, val) {
       if (typeof props === 'string') {
         if (!val) return this.style[props];

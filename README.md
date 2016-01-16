@@ -85,6 +85,7 @@ __.isNode(); // Again, double underscore
     * remove() - this - Remove the current element.
     * text([String]) - String/this - If given no parameters, returns the element's text. If given the first parameter, replaces the element's text with the new text.
     * html([String]) - String/this - If given no parameters, returns the element's html. If given the first parameter, replaces the element's html with the new html.
+    * centerToWindow([Boolean]) - this - If given no parameters, it centers the element horizontally and vertically relative to the window. If the parameter is true, it only centers the element horizontally relative to the window. If the parameter is false, it only centers the element vertically relative to the window.
     * hasMultipleOfClass(String) - Boolean - Check if the element has multiple occurrences of a class.
     * hasClass(String) - Boolean - Check if the element has a certain class.
     * addClass(String) - this - Add the specified class to the element.
