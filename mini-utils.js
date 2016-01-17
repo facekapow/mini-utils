@@ -641,6 +641,11 @@
       return this;
     }
 
+    elm.prototype.prependChild = function(child) {
+      this.insertBefore(child, this.firstChild);
+      return this;
+    }
+
     elm.prototype.css = function(props, val) {
       if (typeof props === 'string') {
         if (!val) return this.style[props];
@@ -833,5 +838,10 @@
       }
     }
     /* End easyPost */
+  }
+  if ((!exports.isBrowser || !exports.isWebWorker() && exports.isNode()) || exports.isElectron()) {
+    exports.homeDir = function() {
+      return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+    }
   }
 });

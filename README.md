@@ -47,6 +47,9 @@ __.isNode(); // Again, double underscore
   * nextTick(Function) - Unknown - A little nextTick shim (return depends on what method is used to achieve the shim).
   * clone(Object) - Object - Creates a clone of an object and returns it.
 
+### Node-Only Utils (inlcudes Electron):
+  * homeDir() - String - Returns the user's home directory path.
+
 ### WebWorker & Browser Utils (includes Electron):
   * import(String, Function) - undefined - Requests a script from the url given in the first option, and executes the code and calls the function in the second option (which should accept an error parameter and a parameter containing the exports from the requested script).
   * importSync(String) - Object - Synchronous version of `import`. Returns the script's exports. WARNING: Uses synchronous version of XMLHttpRequest, which *may* hang the browser, **strongly advised to use the async version above**!
@@ -86,6 +89,7 @@ __.isNode(); // Again, double underscore
     * text([String]) - String/this - If given no parameters, returns the element's text. If given the first parameter, replaces the element's text with the new text.
     * html([String]) - String/this - If given no parameters, returns the element's html. If given the first parameter, replaces the element's html with the new html.
     * centerToWindow([Boolean]) - this - If given no parameters, it centers the element horizontally and vertically relative to the window. If the parameter is true, it only centers the element horizontally relative to the window. If the parameter is false, it only centers the element vertically relative to the window.
+    * prependChild(child) - this - Inserts the given child before the first node, essentially prepending the child.
     * hasMultipleOfClass(String) - Boolean - Check if the element has multiple occurrences of a class.
     * hasClass(String) - Boolean - Check if the element has a certain class.
     * addClass(String) - this - Add the specified class to the element.
