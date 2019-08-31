@@ -47,7 +47,7 @@ __.isNode(); // Again, double underscore
   * nextTick(Function) - Unknown - A little nextTick shim (return depends on what method is used to achieve the shim).
   * clone(Object) - Object - Creates a clone of an object and returns it.
 
-### Node-Only Utils (inlcudes Electron):
+### Node-Only Utils (includes Electron):
   * homeDir() - String - Returns the user's home directory path.
 
 ### WebWorker & Browser Utils (includes Electron):
@@ -106,6 +106,3 @@ __.isNode(); // Again, double underscore
 |  Object - Object of properties  |             undefined            |                this              |
 | Array - Array of property names |             undefined            | Array - Array of property values |
 | Array - Array of property names | Array - Array of property values |                this              |
-
-### Node-Only Utils:
-None yet.
